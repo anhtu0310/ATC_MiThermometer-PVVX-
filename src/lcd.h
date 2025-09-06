@@ -151,8 +151,8 @@ void show_ota_screen(void);
 #define POWERUP_SCREEN	0
 void show_reboot_screen(void);
 #define SHOW_REBOOT_SCREEN() show_reboot_screen()
-#define LCD_BUF_SIZE	6
-#define SHOW_SMILEY		1
+#define LCD_BUF_SIZE	8
+#define SHOW_SMILEY		0
 extern u8 display_buff[LCD_BUF_SIZE], display_cmp_buff[LCD_BUF_SIZE];
 void show_small_number(s16 number, bool percent); // -9 .. 99
 

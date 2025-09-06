@@ -56,21 +56,22 @@ const u8 lcd_init_clr_b14[] =	{0x80,0x40,0xC0,0,0xC0,0,0xC0,0,0xC0,0,0xC0,0,0xC0
  * 0400007cf3c8 - blink
  */
 const u8 lcd_init_b19[]	=	{
-		0xea, // Set IC Operation(ICSET): Software Reset, Internal oscillator circuit
-		0xa4, // Display control (DISCTL): Normal mode, FRAME flip, Power save mode 1
-//		0x9c, // Address set (ADSET): 0x1C ?
-		0xac, // Display control (DISCTL): Power save mode 1, FRAME flip, Power save mode 1
-		0xbc, // Display control (DISCTL): Power save mode 3, FRAME flip, Power save mode 1
-		0xf0, // Blink control (BLKCTL): Off
-		0xfc, // All pixel control (APCTL): Normal
-		0xc8, // Mode Set (MODE SET): Display ON, 1/3 Bias
-		0x00, // Set Address 0
-		// Clear 18 bytes RAM BU9792AFUV
-		0x00,0x00,0x00,0x00,
-		0x00,0x00,0x00,0x00,
-		0x00,0x00,0x00,0x00,
-		0x00,0x00,0x00,0x00,
-		0x00,0x00
+// 		0xea, // Set IC Operation(ICSET): Software Reset, Internal oscillator circuit
+// 		0xa4, // Display control (DISCTL): Normal mode, FRAME flip, Power save mode 1
+// //		0x9c, // Address set (ADSET): 0x1C ?
+// 		0xac, // Display control (DISCTL): Power save mode 1, FRAME flip, Power save mode 1
+// 		0xbc, // Display control (DISCTL): Power save mode 3, FRAME flip, Power save mode 1
+// 		0xf0, // Blink control (BLKCTL): Off
+// 		0xfc, // All pixel control (APCTL): Normal
+// 		0xc8, // Mode Set (MODE SET): Display ON, 1/3 Bias
+// 		0x00, // Set Address 0
+// 		// Clear 18 bytes RAM BU9792AFUV
+// 		0x00,0x00,0x00,0x00,
+// 		0x00,0x00,0x00,0x00,
+// 		0x00,0x00,0x00,0x00,
+// 		0x00,0x00,0x00,0x00,
+// 		0x00,0x00
+0xC8, 0xB4, 0xF0 
 };
 
 typedef struct __attribute__((packed)) _dma_uart_buf_t {
@@ -86,22 +87,39 @@ RAM dma_uart_buf_t utxb;
 /* 0,1,2,3,4,5,6,7,8,9,A,b,C,d,E,F*/
 const u8 display_numbers[] = {
 	//76543210
-	0b11110101, // 0  0xf5
-	0b00000101, // 1  0x05
-	0b11010011, // 2  0xd3
-	0b10010111, // 3  0x97
-	0b00100111, // 4  0x27
-	0b10110110, // 5  0xb6
-	0b11110110, // 6  0xf6
-	0b00010101, // 7  0x15
-	0b11110111, // 8  0xf7
-	0b10110111, // 9  0xb7
-	0b01110111, // A  0x77
-	0b11100110, // b  0xe6
-	0b11110000, // C  0xf0
-	0b11000111, // d  0xc7
-	0b11110010, // E  0xf2
-	0b01110010  // F  0x72
+	// 0b11110101, // 0  0xf5
+	// 0b00000101, // 1  0x05
+	// 0b11010011, // 2  0xd3
+	// 0b10010111, // 3  0x97
+	// 0b00100111, // 4  0x27
+	// 0b10110110, // 5  0xb6
+	// 0b11110110, // 6  0xf6
+	// 0b00010101, // 7  0x15
+	// 0b11110111, // 8  0xf7
+	// 0b10110111, // 9  0xb7
+	// 0b01110111, // A  0x77
+	// 0b11100110, // b  0xe6
+	// 0b11110000, // C  0xf0
+	// 0b11000111, // d  0xc7
+	// 0b11110010, // E  0xf2
+	// 0b01110010  // F  0x72
+    0x5F, // 0
+    0x06, // 1
+    0x3D, // 2
+    0x2F, // 3
+    0x66, // 4
+    0x6B, // 5
+    0x7B, // 6
+    0x0E, // 7
+    0x7F, // 8
+    0x6F, // 9
+    0x7E, // A
+    0x73, // B
+    0x59, // C
+    0x37, // D
+    0x79, // E
+    0x78  // F
+
 };
 
 static _attribute_ram_code_ u8 reverse(u8 revByte) {
@@ -279,91 +297,35 @@ static void lcd_send_uart(void) {
 _attribute_ram_code_
 void send_to_lcd(void){
 	unsigned int buff_index;
-	u8 * p = display_buff;
+	// u8 ttmp_buff[]={0,display_numbers[4],display_numbers[5],display_numbers[7],255,255,255,255,255};
+	// show_big_number_x10(-7);
+	// for (int i = 5; i<9; i++)  display_buff[i] = 0;
+	// u8 * p = ttmp_buff;
+	// u8 * p = display_buff;
+
 	if(cfg.flg2.screen_off)
 		return;
-	if (lcd_i2c_addr > N16_I2C_ADDR) {
 		if ((reg_clk_en0 & FLD_CLK0_I2C_EN)==0)
 			init_i2c();
 		else {
 			gpio_setup_up_down_resistor(I2C_SCL, PM_PIN_PULLUP_10K);
 			gpio_setup_up_down_resistor(I2C_SDA, PM_PIN_PULLUP_10K);
 		}
-		if (lcd_i2c_addr == (B14_I2C_ADDR << 1)) {
+		// if (lcd_i2c_addr == (B14_I2C_ADDR << 1)) {
 			// B1.4, B1.7, B2.0
 			reg_i2c_speed = (u8)(CLOCK_SYS_CLOCK_HZ/(4*700000)); // 700 kHz
 			reg_i2c_id = lcd_i2c_addr;
-			reg_i2c_adr_dat = 0x4080;
-			reg_i2c_ctrl = FLD_I2C_CMD_START | FLD_I2C_CMD_ID | FLD_I2C_CMD_ADDR | FLD_I2C_CMD_DO;
+			reg_i2c_adr = 0x00;
+			reg_i2c_ctrl = FLD_I2C_CMD_START | FLD_I2C_CMD_ID | FLD_I2C_CMD_ADDR ;//| FLD_I2C_CMD_DO;
 			while (reg_i2c_status & FLD_I2C_CMD_BUSY);
-			reg_i2c_adr = 0xC0;
+			// reg_i2c_adr = 0xC0;
 			for(buff_index = 0; buff_index < sizeof(display_buff); buff_index++) {
-				reg_i2c_do = *p++;
-				reg_i2c_ctrl = FLD_I2C_CMD_ADDR | FLD_I2C_CMD_DO;
+				reg_i2c_do = display_buff[buff_index];
+				reg_i2c_ctrl = FLD_I2C_CMD_DO;//FLD_I2C_CMD_ADDR
 				while (reg_i2c_status & FLD_I2C_CMD_BUSY);
 			}
 			reg_i2c_ctrl = FLD_I2C_CMD_STOP;
-		} else { // (lcd_i2c_addr == (B19_I2C_ADDR << 1))
-			// B1.9 BU9792AFUV
-#if 1
-			for(buff_index = 0; buff_index < sizeof(display_buff); buff_index++)
-				utxb.data[buff_index] = reverse(*p++);
-			p = utxb.data;
-			reg_i2c_id = lcd_i2c_addr;
-			reg_i2c_adr = 0x04;	// addr: 4
-			reg_i2c_do = *p++;
-			reg_i2c_di = *p++;
-			reg_i2c_ctrl = FLD_I2C_CMD_ID | FLD_I2C_CMD_ADDR | FLD_I2C_CMD_DO | FLD_I2C_CMD_DI | FLD_I2C_CMD_START;
-			while (reg_i2c_status & FLD_I2C_CMD_BUSY);
-			reg_i2c_adr_dat = 0;
-			reg_i2c_ctrl = FLD_I2C_CMD_ADDR | FLD_I2C_CMD_DO;
-			while (reg_i2c_status & FLD_I2C_CMD_BUSY);
-			reg_i2c_adr = *p++;
-			reg_i2c_do = *p++;
-			reg_i2c_ctrl = FLD_I2C_CMD_ADDR | FLD_I2C_CMD_DO;
-			while (reg_i2c_status & FLD_I2C_CMD_BUSY);
-			reg_i2c_adr_dat = 0;
-			reg_i2c_ctrl = FLD_I2C_CMD_ADDR | FLD_I2C_CMD_DO;
-			while (reg_i2c_status & FLD_I2C_CMD_BUSY);
-			reg_i2c_adr = *p++;
-			reg_i2c_do = *p;
-			reg_i2c_ctrl = FLD_I2C_CMD_ADDR | FLD_I2C_CMD_DO | FLD_I2C_CMD_STOP;
-			while (reg_i2c_status & FLD_I2C_CMD_BUSY);
-			// LCD cmd: 0xc8 - Mode Set (MODE SET): Display ON, 1/3 Bias
-			reg_i2c_adr = 0xC8;
-			reg_i2c_ctrl = FLD_I2C_CMD_START | FLD_I2C_CMD_ID | FLD_I2C_CMD_ADDR | FLD_I2C_CMD_STOP;
-
-#else
-			reg_i2c_id = lcd_i2c_addr;
-			reg_i2c_adr = 0x04;	// addr: 4
-			reg_i2c_do = reverse(*p++);
-			reg_i2c_di = reverse(*p++);
-			reg_i2c_ctrl = FLD_I2C_CMD_ID | FLD_I2C_CMD_ADDR | FLD_I2C_CMD_DO | FLD_I2C_CMD_DI | FLD_I2C_CMD_START;
-			while (reg_i2c_status & FLD_I2C_CMD_BUSY);
-			reg_i2c_adr_dat = 0;
-			reg_i2c_ctrl = FLD_I2C_CMD_ADDR | FLD_I2C_CMD_DO;
-			while (reg_i2c_status & FLD_I2C_CMD_BUSY);
-			reg_i2c_adr = reverse(*p++);
-			reg_i2c_do = reverse(*p++);
-			reg_i2c_ctrl = FLD_I2C_CMD_ADDR | FLD_I2C_CMD_DO;
-			while (reg_i2c_status & FLD_I2C_CMD_BUSY);
-			reg_i2c_adr_dat = 0;
-			reg_i2c_ctrl = FLD_I2C_CMD_ADDR | FLD_I2C_CMD_DO;
-			while (reg_i2c_status & FLD_I2C_CMD_BUSY);
-			reg_i2c_adr = reverse(*p++);
-			reg_i2c_do = reverse(*p);
-			reg_i2c_ctrl = FLD_I2C_CMD_ADDR | FLD_I2C_CMD_DO | FLD_I2C_CMD_STOP;
-#endif
-		}
 		while (reg_i2c_status & FLD_I2C_CMD_BUSY);
-	}
-	else {
-		lcd_set_buf_uart_spi(p);
-		if (lcd_i2c_addr) // N16_I2C_ADDR -> new B1.6 SPI
-			lcd_send_spi();
-		else // UART B1.5, B1.6
-			lcd_send_uart();
-	}
 }
 
 //const u8 lcd_init_cmd[] = {0xea,0xf0, 0xc0, 0xbc}; // sleep all 9.4 uA
@@ -384,10 +346,14 @@ void init_lcd(void){
 	lcd_i2c_addr = (u8) scan_i2c_addr(B19_I2C_ADDR << 1);
 	if (lcd_i2c_addr) { // B1.9
 		if(cfg.flg2.screen_off) {
-			lcd_send_i2c_byte(0xEA); // BU9792AFUV reset
+			// lcd_send_i2c_byte(0xEA); // BU9792AFUV reset
 		} else {
+			// lcd_send_i2c_buf((u8 *) lcd_init_b19, sizeof(lcd_init_b19));
 			lcd_send_i2c_buf((u8 *) lcd_init_b19, sizeof(lcd_init_b19));
-			lcd_send_i2c_buf((u8 *) lcd_init_b19, sizeof(lcd_init_b19));
+			u8 buff[9] = {0, 255,255,255,255,255,255,255,255};
+			lcd_send_i2c_buf(buff, 9);
+			pm_wait_ms(1000);
+
 		}
 		return;
 	}
@@ -441,60 +407,74 @@ void show_temp_symbol(u8 symbol) {
  * 7 = "(ooo)" */
 _attribute_ram_code_
 void show_smiley(u8 state){
-	display_buff[2] &= ~0x07;
-	display_buff[2] |= state & 0x07;
+	// display_buff[2] &= ~0x07;
+	// display_buff[2] |= state & 0x07;
 }
 
 _attribute_ram_code_
 void show_ble_symbol(bool state){
-	if (state)
-		display_buff[2] |= LCD_SYM_BLE;
-	else 
-		display_buff[2] &= ~LCD_SYM_BLE;
+	// if (state)
+	// 	display_buff[2] |= LCD_SYM_BLE;
+	// else 
+	// 	display_buff[2] &= ~LCD_SYM_BLE;
 }
 
 _attribute_ram_code_
 void show_battery_symbol(bool state){
-	if (state)
-		display_buff[1] |= LCD_SYM_BAT;
-	else 
-		display_buff[1] &= ~LCD_SYM_BAT;
+	// if (state)
+	// 	display_buff[1] |= LCD_SYM_BAT;
+	// else 
+	// 	display_buff[1] &= ~LCD_SYM_BAT;
 }
 
 /* number in 0.1 (-995..19995), Show: -99 .. -9.9 .. 199.9 .. 1999 */
 _attribute_ram_code_
 __attribute__((optimize("-Os"))) void show_big_number_x10(s16 number){
 //	display_buff[4] = point?0x08:0x00;
-	if (number > 19995) {
+	if (number > 9999) {
    		display_buff[3] = 0;
-   		display_buff[4] = LCD_SYM_i; // "i"
-   		display_buff[5] = LCD_SYM_H; // "H"
-	} else if (number < -995) {
+   		display_buff[2] = LCD_SYM_i; // "i"
+   		display_buff[1] = LCD_SYM_H; // "H"
+	} else if (number < -999) {
    		display_buff[3] = 0;
-   		display_buff[4] = LCD_SYM_o; // "o"
-   		display_buff[5] = LCD_SYM_L; // "L"
+   		display_buff[2] = LCD_SYM_o; // "o"
+   		display_buff[1] = LCD_SYM_L; // "L"
 	} else {
-		display_buff[5] = 0;
-		/* number: -995..19995 */
-		if (number > 1995 || number < -95) {
-			display_buff[4] = 0; // no point, show: -99..1999
-			if (number < 0){
-				number = -number;
-				display_buff[5] = 2; // "-"
+		display_buff[0] = 0;
+		display_buff[1] = 0;
+		display_buff[2] = 0;
+
+		if (number < 0){
+			number = -number;
+			if(number > 100) {
+				display_buff[0] = 0b100000; 
+				display_buff[2] = 0b10000000; // point,
 			}
-			number = (number + 5) / 10; // round(div 10)
-		} else { // show: -9.9..199.9
-			display_buff[4] = 0x08; // point,
-			if (number < 0){
-				number = -number;
-				display_buff[5] = 2; // "-"
-			}
+			else display_buff[1] = 0b100000; // "-"
 		}
+		else if (number <1995 )
+			display_buff[2] = 0b10000000; // point,
+
+		// /* number: -995..19995 */
+		// if (number > 1995 || number < -95) {
+		// 	display_buff[2] = 0; // no point, show: -99..1999
+		// 	if (number < 0){
+		// 		number = -number;
+		// 		display_buff[0] = 0b100000; // "-"
+		// 	}
+		// 	number = (number + 5) / 10; // round(div 10)
+		// } else { // show: -9.9..199.9
+		// 	display_buff[2] = 0b10000000; // point,
+		// 	if (number < 0){
+		// 		number = -number;
+		// 		display_buff[0] = 0b100000; // "-"
+		// 	}
+		// }
 		/* number: -99..1999 */
-		if (number > 999) display_buff[5] |= 0x08; // "1" 1000..1999
-		if (number > 99) display_buff[5] |= display_numbers[number / 100 % 10];
-		if (number > 9) display_buff[4] |= display_numbers[number / 10 % 10];
-		else display_buff[4] |= 0xF5; // "0"
+		if (number > 999) display_buff[0] |= display_numbers[number/ 1000 % 10];// "1" 1000..1999
+		if (number > 99) display_buff[1] |= display_numbers[number / 100 % 10];
+		if (number > 9) display_buff[2] |= display_numbers[number / 10 % 10];
+		else display_buff[2] |= display_numbers[0]; // "0"
 	    display_buff[3] = display_numbers[number %10];
 	}
 }
@@ -502,39 +482,39 @@ __attribute__((optimize("-Os"))) void show_big_number_x10(s16 number){
 /* -9 .. 99 */
 _attribute_ram_code_
 __attribute__((optimize("-Os"))) void show_small_number(s16 number, bool percent){
-	display_buff[1] = display_buff[1] & 0x08; // and battery
-	display_buff[0] = percent?0x08:0x00;
-	if (number > 99) {
-		display_buff[0] |= LCD_SYM_i; // "i"
-		display_buff[1] |= LCD_SYM_H; // "H"
-	} else if (number < -9) {
-		display_buff[0] |= LCD_SYM_o; // "o"
-		display_buff[1] |= LCD_SYM_L; // "L"
-	} else {
-		if (number < 0) {
-			number = -number;
-			display_buff[1] = 2; // "-"
-		}
-		if (number > 9) display_buff[1] |= display_numbers[number / 10 % 10];
-		display_buff[0] |= display_numbers[number %10];
-	}
+// 	display_buff[1] = display_buff[1] & 0x08; // and battery
+// 	display_buff[0] = percent?0x08:0x00;
+// 	if (number > 99) {
+// 		display_buff[0] |= LCD_SYM_i; // "i"
+// 		display_buff[1] |= LCD_SYM_H; // "H"
+// 	} else if (number < -9) {
+// 		display_buff[0] |= LCD_SYM_o; // "o"
+// 		display_buff[1] |= LCD_SYM_L; // "L"
+// 	} else {
+// 		if (number < 0) {
+// 			number = -number;
+// 			display_buff[1] = 2; // "-"
+// 		}
+// 		if (number > 9) display_buff[1] |= display_numbers[number / 10 % 10];
+// 		display_buff[0] |= display_numbers[number %10];
+// 	}
 }
 
 void show_ota_screen(void) {
-	memset(&display_buff, 0, sizeof(display_buff));
-	display_buff[2] = BIT(4); // "ble"
-	display_buff[3] = BIT(7); // "_"
-	display_buff[4] = BIT(7); // "_"
-	display_buff[5] = BIT(7); // "_"
-	send_to_lcd();
-	if(lcd_i2c_addr == B19_I2C_ADDR << 1)
-		lcd_send_i2c_byte(0xf2);
+	// memset(&display_buff, 0, sizeof(display_buff));
+	// display_buff[2] = BIT(4); // "ble"
+	// display_buff[3] = BIT(7); // "_"
+	// display_buff[4] = BIT(7); // "_"
+	// display_buff[5] = BIT(7); // "_"
+	// send_to_lcd();
+	// if(lcd_i2c_addr == B19_I2C_ADDR << 1)
+	// 	lcd_send_i2c_byte(0xf2);
 }
 
 // #define SHOW_REBOOT_SCREEN()
 void show_reboot_screen(void) {
-	memset(&display_buff, 0xff, sizeof(display_buff));
-	send_to_lcd();
+	// memset(&display_buff, 0xff, sizeof(display_buff));
+	// send_to_lcd();
 }
 
 #if	USE_DISPLAY_CLOCK

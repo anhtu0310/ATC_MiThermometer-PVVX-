@@ -490,9 +490,10 @@ extern "C" {
 #define USE_SENSOR_CHT8305		0
 #define USE_SENSOR_CHT8215		0
 #define USE_SENSOR_AHT20_30		0
-#define USE_SENSOR_SHT4X		1
-#define USE_SENSOR_SHTC3		1
-#define USE_SENSOR_SHT30		1
+#define USE_SENSOR_SHT4X		0
+#define USE_SENSOR_SHTC3		0
+#define USE_SENSOR_SHT30		0
+#define USE_SENSOR_SHT20		1
 
 #define SHL_ADC_VBAT		1  // "B0P" in adc.h
 #define GPIO_VBAT			GPIO_PB0 // missing pin on case TLSR8251F512ET24
@@ -502,11 +503,16 @@ extern "C" {
 #define PB0_FUNC			AS_GPIO
 
 #define I2C_MAX_SPEED 		700000 // 700 kHz
-#define I2C_SCL 			GPIO_PC2
-#define I2C_SDA 			GPIO_PC3
-#define I2C_GROUP 			I2C_GPIO_GROUP_C2C3
-#define PULL_WAKEUP_SRC_PC2	PM_PIN_PULLUP_10K
-#define PULL_WAKEUP_SRC_PC3	PM_PIN_PULLUP_10K
+#define I2C_SDA 			GPIO_PA3
+#define I2C_SCL 			GPIO_PA4
+
+#define I2C_GROUP 			I2C_GPIO_GROUP_A3A4
+#define PULL_WAKEUP_SRC_PA4	PM_PIN_PULLUP_10K
+#define PULL_WAKEUP_SRC_PA3	PM_PIN_PULLUP_10K
+// #define I2C_SDA 			GPIO_PC3
+// #define I2C_GROUP 			I2C_GPIO_GROUP_C2C3
+// #define PULL_WAKEUP_SRC_PC2	PM_PIN_PULLUP_10K
+// #define PULL_WAKEUP_SRC_PC3	PM_PIN_PULLUP_10K
 
 #if (DEV_SERVICES & SERVICE_TH_TRG)
 
@@ -2493,7 +2499,7 @@ extern "C" {
 #define USE_AVERAGE_BATTERY	1
 #endif
 
-#define USE_DISPLAY_CLOCK 	1 // = 1 display clock, = 0 smile blinking
+#define USE_DISPLAY_CLOCK  	1 // = 1 display clock, = 0 smile blinking
 
 #ifndef USE_SYNC_SCAN
 #if (DEV_SERVICES & SERVICE_SCANTIM)
