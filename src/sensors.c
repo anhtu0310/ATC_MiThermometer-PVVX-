@@ -898,9 +898,10 @@ void start_measure_sensor_deep_sleep(void) {
 		} else
 #endif //USE_SENSOR_SHT30
 #if USE_SENSOR_SHT20
-		if(sensor_cfg.sensor_type == TH_SENSOR_SHT20) 
+		if(sensor_cfg.sensor_type == TH_SENSOR_SHT20){
 			if(measured_data.count % 2 == 0 )	send_i2c_byte(sensor_cfg.i2c_addr, SHT20_TRIG_TEMP_NH); // start measure T/H
 			else send_i2c_byte(sensor_cfg.i2c_addr, SHT20_TRIG_HUMI_NH);
+		}
 #endif //USE_SENSOR_SHT20
 		{};
 	}

@@ -513,7 +513,7 @@ void low_vbat(void) {
 #if (DEVICE_TYPE == DEVICE_CGG1) || (DEVICE_TYPE == DEVICE_CGDK2)
 	show_small_number_x10(-1023, 1); // "Lo"
 #else
-	show_small_number(-123, 1); // "Lo"
+	// show_small_number(-123, 1); // "Lo"
 #endif
 	show_battery_symbol(1);
 	update_lcd();

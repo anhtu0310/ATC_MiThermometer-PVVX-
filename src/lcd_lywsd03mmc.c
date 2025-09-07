@@ -38,12 +38,23 @@ RAM u8 lcd_i2c_addr;
 #define lcd_send_i2c_buf(b, a)  send_i2c_buf(lcd_i2c_addr, (u8 *) b, a)
 
 /* t,H,h,L,o,i  0xe2,0x67,0x66,0xe0,0xC6,0x40 */
-#define LCD_SYM_H	0x67	// "H"
-#define LCD_SYM_i	0x40	// "i"
-#define LCD_SYM_L	0xE0	// "L"
-#define LCD_SYM_o	0xC6	// "o"
+// #define LCD_SYM_H	0x67	// "H"
+// #define LCD_SYM_i	0x40	// "i"
+// #define LCD_SYM_L	0xE0	// "L"
+// #define LCD_SYM_o	0xC6	// "o"
 
-#define LCD_SYM_BLE	0x10	// connect
+
+// #define LCD_SYM_H	0x67	// "H"
+// #define LCD_SYM_i	0x40	// "i"
+#define SEG_NUM_DASH	16	// "o
+#define SEG_NUM_L		17	// "o
+#define SEG_NUM_o		18	// "o
+#define SEG_NUM_H		19	// "o
+#define SEG_NUM_I		1	// "o
+
+#define LCD_SYM_BLE	 0x10	// connect
+#define LCD_SYM_MAIL 0x10	// connect
+
 #define LCD_SYM_BAT	0x08	// battery
 
 const u8 lcd_init_cmd_b14[] =	{0x80,0x3B,0x80,0x02,0x80,0x0F,0x80,0x95,0x80,0x88,0x80,0x88,0x80,0x88,0x80,0x88,0x80,0x19,0x80,0x28,0x80,0xE3,0x80,0x11};
@@ -56,21 +67,6 @@ const u8 lcd_init_clr_b14[] =	{0x80,0x40,0xC0,0,0xC0,0,0xC0,0,0xC0,0,0xC0,0,0xC0
  * 0400007cf3c8 - blink
  */
 const u8 lcd_init_b19[]	=	{
-// 		0xea, // Set IC Operation(ICSET): Software Reset, Internal oscillator circuit
-// 		0xa4, // Display control (DISCTL): Normal mode, FRAME flip, Power save mode 1
-// //		0x9c, // Address set (ADSET): 0x1C ?
-// 		0xac, // Display control (DISCTL): Power save mode 1, FRAME flip, Power save mode 1
-// 		0xbc, // Display control (DISCTL): Power save mode 3, FRAME flip, Power save mode 1
-// 		0xf0, // Blink control (BLKCTL): Off
-// 		0xfc, // All pixel control (APCTL): Normal
-// 		0xc8, // Mode Set (MODE SET): Display ON, 1/3 Bias
-// 		0x00, // Set Address 0
-// 		// Clear 18 bytes RAM BU9792AFUV
-// 		0x00,0x00,0x00,0x00,
-// 		0x00,0x00,0x00,0x00,
-// 		0x00,0x00,0x00,0x00,
-// 		0x00,0x00,0x00,0x00,
-// 		0x00,0x00
 0xC8, 0xB4, 0xF0 
 };
 
@@ -86,23 +82,6 @@ RAM dma_uart_buf_t utxb;
 
 /* 0,1,2,3,4,5,6,7,8,9,A,b,C,d,E,F*/
 const u8 display_numbers[] = {
-	//76543210
-	// 0b11110101, // 0  0xf5
-	// 0b00000101, // 1  0x05
-	// 0b11010011, // 2  0xd3
-	// 0b10010111, // 3  0x97
-	// 0b00100111, // 4  0x27
-	// 0b10110110, // 5  0xb6
-	// 0b11110110, // 6  0xf6
-	// 0b00010101, // 7  0x15
-	// 0b11110111, // 8  0xf7
-	// 0b10110111, // 9  0xb7
-	// 0b01110111, // A  0x77
-	// 0b11100110, // b  0xe6
-	// 0b11110000, // C  0xf0
-	// 0b11000111, // d  0xc7
-	// 0b11110010, // E  0xf2
-	// 0b01110010  // F  0x72
     0x5F, // 0
     0x06, // 1
     0x3D, // 2
@@ -118,16 +97,63 @@ const u8 display_numbers[] = {
     0x59, // C
     0x37, // D
     0x79, // E
-    0x78  // F
+    0x78, // F
+	0x20, // -
+	0x51, // L
+	0x33, //o
+	0x76, // H
 
 };
 
-static _attribute_ram_code_ u8 reverse(u8 revByte) {
-   revByte = (revByte & 0xF0) >> 4 | (revByte & 0x0F) << 4;
-   revByte = (revByte & 0xCC) >> 2 | (revByte & 0x33) << 2;
-   revByte = (revByte & 0xAA) >> 1 | (revByte & 0x55) << 1;
-   return revByte;
-}
+// const u8 display_numbers_small[] = {
+// 	0b10101111, // 0xAF
+// 	0b00000110, // 0x06
+// 	0b01101101, // 0x6D
+// 	0b01001111, // 0x4F
+// 	0b11000110, // 0xC6
+// 	0b11001011, // 0xCB
+// 	0b11101011, // 0xEB
+// 	0b00001110, // 0x0E
+// 	0b11101111, // 0xEF
+// 	0b11001111, // 0xCF
+// 	0b11101110, // 0xEE
+// 	0b11100011, // 0xE3
+// 	0b10101001, // 0xA9
+// 	0b01100111, // 0x67
+// 	0b11101001, // 0xE9
+// 	0b11101000  // 0xE8
+
+// };
+
+const u8 display_numbers_small[] = {
+    0xA0, // Originally 0xAF
+    0x00, // Originally 0x06
+    0x60, // Originally 0x6D
+    0x40, // Originally 0x4F
+    0xC0, // Originally 0xC6
+    0xC0, // Originally 0xCB
+    0xE0, // Originally 0xEB
+    0x00, // Originally 0x0E
+    0xE0, // Originally 0xEF
+    0xC0, // Originally 0xCF
+    0xE0, // Originally 0xEE
+    0xE0, // Originally 0xE3
+    0xA0,  // Originally 0xA9
+    0x60, // Originally 0x67
+    0xE0, // Originally 0xE9
+    0xE0,  // Originally 0xE8
+	0x40, // Dash
+	0xA0, //L
+	0x60,  //o
+	0xE0, // H
+
+};
+// static _attribute_ram_code_ u8 reverse(u8 revByte) {
+//    revByte = (revByte & 0xF0) >> 4 | (revByte & 0x0F) << 4;
+//    revByte = (revByte & 0xCC) >> 2 | (revByte & 0x33) << 2;
+//    revByte = (revByte & 0xAA) >> 1 | (revByte & 0x55) << 1;
+//    return revByte;
+// }
 
 
 //---------------------
@@ -177,50 +203,6 @@ static void lcd_send_spi(void) {
 	} while(pd <= &utxb.end);
 	BM_SET(reg_gpio_oen(GPIO_LCD_SDI), GPIO_LCD_SDI & 0xff); // SDI output disable
 }
-
-#if 0 /* Hardware SPI
- *
- * Minimum SPI Clock Frequencies:
- SYS CLK: 16MHz -  SPI: 62.5 kHz
- SYS CLK: 24MHz -  SPI: 93.75 kHz
- SYS CLK: 32MHz -  SPI: 125 kHz
- SYS CLK: 48MHz -  SPI: 187.5 kHz */
-#define SPI_DIV_CLK		0x7F
-/* SPI Mode:
- bit0: CPOL-Clock Polarity
- bit1: CPHA-Clock Phase
- MODE0: CPOL = 0 , CPHA =0
- MODE1: CPOL = 0 , CPHA =1
- MODE2: CPOL = 1 , CPHA =0
- MODE3: CPOL = 1 , CPHA =1 */
-#define SPI_MODE	3
-
-_attribute_ram_code_
-void lcd_send_spi(void) {
-	// B1.5, B1.6 (UART LCD)
-	reg_clk_en0 |= FLD_CLK0_SPI_EN;//enable spi clock
-	// bit0~bit6 set spi clock ; spi clock=system clock/((DivClock+1)*2)
-	// bit7 enables spi function mode
-	reg_spi_sp = SPI_DIV_CLK | FLD_SPI_ENABLE;
-	reg_spi_ctrl |= FLD_SPI_MASTER_MODE_EN; //0x09: bit1 enables master mode
-	reg_spi_inv_clk	&= (~FLD_SPI_MODE_WORK_MODE); // clear spi working mode
-	reg_spi_inv_clk |= SPI_MODE;// select SPI mode, surpport four modes
-
-	reg_pin_i2c_spi_out_en |= (FLD_PIN_PBGROUP_SPI_EN|FLD_PIN_PDGROUP_SPI_EN);
-	reg_pin_i2c_spi_en |= (FLD_PIN_PD7_SPI_EN);
-	reg_pin_i2c_spi_en &= ~(FLD_PIN_PD7_I2C_EN);
-
-	gpio_set_func(GPIO_PB7, AS_SPI);
-	gpio_set_func(GPIO_PD7, AS_SPI);
-	u8 * pd = &utxb.start;
-	do {
-    	reg_spi_data = *pd++;
-        while(reg_spi_ctrl & FLD_SPI_BUSY); //wait writing finished
-    } while(pd <= &utxb.end);
-	BM_SET(reg_gpio_func(GPIO_PB7), GPIO_PB7 & 0xff);
-    reg_clk_en0 &= ~(FLD_CLK0_SPI_EN); // disable spi clock
-}
-#endif // Hardware SPI
 
 //-----------------------
 // B1.5, B1.6 UART LCD
@@ -350,9 +332,29 @@ void init_lcd(void){
 		} else {
 			// lcd_send_i2c_buf((u8 *) lcd_init_b19, sizeof(lcd_init_b19));
 			lcd_send_i2c_buf((u8 *) lcd_init_b19, sizeof(lcd_init_b19));
-			u8 buff[9] = {0, 255,255,255,255,255,255,255,255};
-			lcd_send_i2c_buf(buff, 9);
-			pm_wait_ms(1000);
+			// u8 buff[9] = {0};//, 255,255,255,255,display_numbers_small[2],display_numbers_small[2],255,255};
+
+			// // u16* tmp = buff+5;
+			// lcd_send_i2c_buf(buff, 9);
+			// pm_wait_ms(500);
+			// for(u8 i = 0; i < 9 ; i++){
+
+			// 	buff[5] = (display_numbers[i] & 0x0F )| (buff[5] & 0xF0 );
+			// 	buff[6] = (display_numbers_small[i]) | (display_numbers[i+1] & 0x0F ) | (buff[6] & 0b00010000) ;
+				
+			// 	// buff[6] =  (buff[6] &0xF0 );
+			// 	buff[7] = (display_numbers_small[i+1])|(display_numbers[i+2] & 0x0F)| (buff[7] & 0b00010000) ;
+				
+			// 	// buff[7] = (buff[7] &0xF0 );
+			// 	buff[8] = (display_numbers_small[i+2]) |( buff[8] & 0x1F) ;
+			// 	lcd_send_i2c_buf(buff, 9);
+			// 	pm_wait_ms(500);
+			
+			
+			
+			
+			
+			// }
 
 		}
 		return;
@@ -393,8 +395,21 @@ void init_lcd(void){
  * 0xE0 = "°E" */
 _attribute_ram_code_
 void show_temp_symbol(u8 symbol) {
-	display_buff[2] &= ~0xE0;
-	display_buff[2] |= symbol & 0xE0;
+	switch (symbol)
+	{
+	case TMP_SYM_F:
+		display_buff[3] |= 0x80;
+		display_buff[6] &= 0xEF;
+		break;
+	case TMP_SYM_C:
+		display_buff[6] |= 0x10;
+		display_buff[3] &= 0x7F;
+		break;
+	default:		
+		display_buff[3] &= 0x7F;
+		display_buff[6] &= 0xEF;
+		break;
+	}
 }
 
 /* 0 = "     " off,
@@ -407,20 +422,28 @@ void show_temp_symbol(u8 symbol) {
  * 7 = "(ooo)" */
 _attribute_ram_code_
 void show_smiley(u8 state){
-	// display_buff[2] &= ~0x07;
-	// display_buff[2] |= state & 0x07;
+	if (state == 5)
+		display_buff[7] |= LCD_SYM_MAIL;
+	else
+		display_buff[7] &= ~LCD_SYM_MAIL;
 }
 
 _attribute_ram_code_
 void show_ble_symbol(bool state){
-	// if (state)
-	// 	display_buff[2] |= LCD_SYM_BLE;
-	// else 
-	// 	display_buff[2] &= ~LCD_SYM_BLE;
+	if (state)
+		display_buff[6] |= LCD_SYM_BLE;
+	else 
+		display_buff[6] &= ~LCD_SYM_BLE;
 }
 
 _attribute_ram_code_
 void show_battery_symbol(bool state){
+	display_buff[4] &= 0x0F;
+	if(state >= 80) display_buff[4] |= 0xF0;  
+	else if(state >= 60) display_buff[4] |= 0x70;  
+	else if(state >= 40) display_buff[4] |= 0x30;  
+	else if(state >= 20) display_buff[4] |= 0x10;  
+
 	// if (state)
 	// 	display_buff[1] |= LCD_SYM_BAT;
 	// else 
@@ -431,14 +454,13 @@ void show_battery_symbol(bool state){
 _attribute_ram_code_
 __attribute__((optimize("-Os"))) void show_big_number_x10(s16 number){
 //	display_buff[4] = point?0x08:0x00;
+   		display_buff[3] &= 0x80;
 	if (number > 9999) {
-   		display_buff[3] = 0;
-   		display_buff[2] = LCD_SYM_i; // "i"
-   		display_buff[1] = LCD_SYM_H; // "H"
+   		display_buff[2] = display_numbers[SEG_NUM_I]; // "i"
+   		display_buff[1] = display_numbers[SEG_NUM_H]; // "H"
 	} else if (number < -999) {
-   		display_buff[3] = 0;
-   		display_buff[2] = LCD_SYM_o; // "o"
-   		display_buff[1] = LCD_SYM_L; // "L"
+   		display_buff[2] = display_numbers[SEG_NUM_o]; // "o"
+   		display_buff[1] = display_numbers[SEG_NUM_L]; // "L"
 	} else {
 		display_buff[0] = 0;
 		display_buff[1] = 0;
@@ -475,29 +497,43 @@ __attribute__((optimize("-Os"))) void show_big_number_x10(s16 number){
 		if (number > 99) display_buff[1] |= display_numbers[number / 100 % 10];
 		if (number > 9) display_buff[2] |= display_numbers[number / 10 % 10];
 		else display_buff[2] |= display_numbers[0]; // "0"
-	    display_buff[3] = display_numbers[number %10];
+	    display_buff[3] |= display_numbers[number %10];
 	}
 }
 
 /* -9 .. 99 */
 _attribute_ram_code_
 __attribute__((optimize("-Os"))) void show_small_number(s16 number, bool percent){
-// 	display_buff[1] = display_buff[1] & 0x08; // and battery
-// 	display_buff[0] = percent?0x08:0x00;
-// 	if (number > 99) {
-// 		display_buff[0] |= LCD_SYM_i; // "i"
-// 		display_buff[1] |= LCD_SYM_H; // "H"
-// 	} else if (number < -9) {
-// 		display_buff[0] |= LCD_SYM_o; // "o"
-// 		display_buff[1] |= LCD_SYM_L; // "L"
-// 	} else {
-// 		if (number < 0) {
-// 			number = -number;
-// 			display_buff[1] = 2; // "-"
-// 		}
-// 		if (number > 9) display_buff[1] |= display_numbers[number / 10 % 10];
-// 		display_buff[0] |= display_numbers[number %10];
-// 	}
+	// display_buff[1] = display_buff[1] & 0x08; // and battery
+	// display_buff[0] = percent?0x08:0x00;
+	u8 tmp_dsp[3] = {0};
+	if (number > 999) {
+		tmp_dsp[1] = SEG_NUM_I; // "i"
+		tmp_dsp[2] = SEG_NUM_H; // "H"
+		tmp_dsp[0] = SEG_NUM_DASH;
+	} else if (number < -90) {
+		tmp_dsp[1] = SEG_NUM_o; // "o"
+		tmp_dsp[2] = SEG_NUM_L; // "L"
+		tmp_dsp[0] = SEG_NUM_DASH;
+	} else {
+		if (number < 0) {
+			number = -number;
+			tmp_dsp[2] = SEG_NUM_DASH; // "-"
+		}
+		if (number > 99) tmp_dsp[2] = (number / 100 % 10);
+		if (number > 9) tmp_dsp[1] = (number /10 %10);
+		tmp_dsp[0] = (number  %10);
+	}
+	display_buff[4] = (display_numbers[tmp_dsp[0]] & 0x0F )| (display_buff[4] & 0xF0 );
+	display_buff[5] = (display_numbers_small[tmp_dsp[0]])|(display_numbers[tmp_dsp[1]] & 0x0F )|(display_buff[5] & 0b00010000) ;
+	if(!tmp_dsp[2]){
+		display_buff[6] = (display_numbers_small[tmp_dsp[1]])|(display_buff[6] & 0b00010000);
+		display_buff[7] &= 0x1F ;
+	}
+	display_buff[6] = (display_numbers_small[tmp_dsp[1]])|(display_numbers[tmp_dsp[2]] & 0x0F )|(display_buff[6] & 0b00010000) ;	
+	display_buff[7] = (display_numbers_small[tmp_dsp[2]]) |( display_numbers[7] & 0x1F) ;
+
+
 }
 
 void show_ota_screen(void) {
@@ -520,15 +556,15 @@ void show_reboot_screen(void) {
 #if	USE_DISPLAY_CLOCK
 _attribute_ram_code_
 void show_clock(void) {
-	u32 tmp = wrk.utc_time_sec / 60;
-	u32 min = tmp % 60;
-	u32 hrs = tmp / 60 % 24;
-	display_buff[0] = display_numbers[min % 10];
-	display_buff[1] = display_numbers[min / 10 % 10];
-	display_buff[2] = 0;
-	display_buff[3] = display_numbers[hrs % 10];
-	display_buff[4] = display_numbers[hrs / 10 % 10];
-	display_buff[5] = 0;
+// 	u32 tmp = wrk.utc_time_sec / 60;
+// 	u32 min = tmp % 60;
+// 	u32 hrs = tmp / 60 % 24;
+// 	display_buff[0] = display_numbers[min % 10];
+// 	display_buff[1] = display_numbers[min / 10 % 10];
+// 	display_buff[2] = 0;
+// 	display_buff[3] = display_numbers[hrs % 10];
+// 	display_buff[4] = display_numbers[hrs / 10 % 10];
+// 	display_buff[5] = 0;
 }
 #endif // USE_DISPLAY_CLOCK
 

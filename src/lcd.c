@@ -84,7 +84,7 @@ void lcd(void) {
 #if	(DEVICE_TYPE == DEVICE_CGG1) || (DEVICE_TYPE == DEVICE_CGDK2)
 			show_small_number_x10(ext.small_number, ext.flg.percent_on);
 #else
-			show_small_number(ext.small_number, ext.flg.percent_on);
+			// show_small_number(ext.small_number, ext.flg.percent_on);
 #endif
 			show_temp_symbol(*((u8 *) &ext.flg));
 			show_big_number_x10(ext.big_number);
@@ -110,7 +110,7 @@ void lcd(void) {
 				show_batt_cgdk2();
 #endif
 #else
-				show_small_number((measured_data.battery_level >= 100) ? 99 : measured_data.battery_level, 1);
+				// show_small_number((measured_data.battery_level >= 100) ? 99 : measured_data.battery_level, 1);
 #endif // (DEVICE_TYPE == DEVICE_CGG1) || (DEVICE_TYPE == DEVICE_CGDK2)
 				set_small_number_and_bat = false;
 			} else if (cfg.flg.show_time_smile) { // show clock
@@ -138,7 +138,7 @@ void lcd(void) {
 #if	(DEVICE_TYPE == DEVICE_CGG1) || (DEVICE_TYPE == DEVICE_CGDK2)
 			show_small_number_x10(ext.small_number, ext.flg.percent_on);
 #else
-			show_small_number(ext.small_number, ext.flg.percent_on);
+			// show_small_number(ext.small_number, ext.flg.percent_on);
 #endif
 		}
 		show_temp_symbol(*((u8 *) &ext.flg));
@@ -170,7 +170,7 @@ void lcd(void) {
 				show_batt_cgdk2();
 #endif
 #else
-				show_small_number((measured_data.battery_level >= 100) ? 99 : measured_data.battery_level, 1);
+				// show_small_number((measured_data.battery_level >= 100) ? 99 : measured_data.battery_level, 1);
 #endif // (DEVICE_TYPE == DEVICE_CGG1) || (DEVICE_TYPE == DEVICE_CGDK2)
 				set_small_number_and_bat = false;
 			} else if (cfg.flg.show_time_smile) { // show clock
@@ -207,9 +207,9 @@ void lcd(void) {
 #if	(DEVICE_TYPE == DEVICE_LKTMZL02)
 			show_battery_symbol(!cfg.flg.show_batt_enabled);
 #else
-			show_battery_symbol(0);
+			show_battery_symbol(measured_data.battery_level);
 #endif
-			show_small_number(measured_data.humi_x1, 1);
+			show_small_number(measured_data.humi_x01, 1);
 #endif
 		}
 		if (cfg.flg.temp_F_or_C) {
