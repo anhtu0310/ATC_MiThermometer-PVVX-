@@ -332,7 +332,7 @@ void init_lcd(void){
 		} else {
 			// lcd_send_i2c_buf((u8 *) lcd_init_b19, sizeof(lcd_init_b19));
 			lcd_send_i2c_buf((u8 *) lcd_init_b19, sizeof(lcd_init_b19));
-			// u8 buff[9] = {0};//, 255,255,255,255,display_numbers_small[2],display_numbers_small[2],255,255};
+			u8 buff[9] = {0, 255,255,255,255,255,255,255,255};
 
 			// // u16* tmp = buff+5;
 			// lcd_send_i2c_buf(buff, 9);
@@ -401,15 +401,18 @@ void show_temp_symbol(u8 symbol) {
 		display_buff[3] |= 0x80;
 		display_buff[6] &= 0xEF;
 		break;
-	case TMP_SYM_C:
-		display_buff[6] |= 0x10;
-		display_buff[3] &= 0x7F;
-		break;
+	// case TMP_SYM_C:
+	// 	display_buff[6] |= 0x10;
+	// 	display_buff[3] &= 0x7F;
+	// 	break;
 	default:		
-		display_buff[3] &= 0x7F;
-		display_buff[6] &= 0xEF;
+		// display_buff[3] &= 0x7F;
+		// display_buff[6] &= 0xEF;
+	display_buff[5] |= 0x10;
+	display_buff[3] &= 0x7F;
 		break;
 	}
+
 }
 
 /* 0 = "     " off,
@@ -454,6 +457,7 @@ void show_battery_symbol(bool state){
 _attribute_ram_code_
 __attribute__((optimize("-Os"))) void show_big_number_x10(s16 number){
 //	display_buff[4] = point?0x08:0x00;
+
    		display_buff[3] &= 0x80;
 	if (number > 9999) {
    		display_buff[2] = display_numbers[SEG_NUM_I]; // "i"
